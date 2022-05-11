@@ -1,4 +1,5 @@
-/**Contém as classes de maior lógica no sistema, além da classe Banco de dados que armazenam todos os ArrayList utilizados no sistema.
- * @author Gabriel Moraes e Luis Fernando Cintra
+/**Contém as classes responsáveis por controlar as ações do sistema.
+ * @author Gabriel Moraes
+ * @author Luis Fernando Cintra
  */
 package controller;

@@ -55,4 +55,23 @@ public class SubMenuView {
 		return resposta;
 		
 	}
+	
+	public static String telaMenuGerarRelatorioPDF() {
+		Scanner input = new Scanner(System.in);
+		System.out.println("\n");
+		System.out.println("==========================");
+		System.out.println("= GERAR RELATORIOS PDF =");
+		System.out.println("==========================");
+		System.out.println("Digite 1 para o relatorio de Vendas realizadas no geral");
+		System.out.println("Digite 2 para os relatorios de Vendas realizadas por período");
+		System.out.println("Digite 3 para o relatorio de Vendas realizadas  por tipo de prato do cardápio");
+		System.out.println("Digite 4 para o relatorio de Estoque total");
+		System.out.println("Digite 5 para o relatorio de Estoque por produto");
+		System.out.println("Digite 6 para o relatorio de Estoque dos produtos a vencer");
+		System.out.println("Digite 7 para o relatorio de Fornecedores por produto");
+		System.out.println("Digite 8 para o relatorio de Fornecedores por fornecedor");
+		System.out.println("Digite 9 para sair");
+		String resposta = input.nextLine();
+		return resposta;
+	}
 }

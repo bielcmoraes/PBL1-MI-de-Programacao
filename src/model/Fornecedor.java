@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 /**Classe para objetos do tipo Fornecedor, onde são contidos, valores e metódos necessarios para implementação da classe.
  * 
- * @author Gabriel Moraes e Luis Fernando Cintra
+ * @author Gabriel Moraes
+ * @author Luis Fernando Cintra
  * @see Entidade
  */
 public class Fornecedor extends Entidade{
@@ -12,6 +13,7 @@ public class Fornecedor extends Entidade{
 	private String nome;
 	private String cnpj;
 	private String endereco;
+	private ArrayList<String> produtos;
 	
 	/**O construtor inicializa o costrutor da classe herdada e atribui a cada variável da classe os respectivos valores fornecidos como parâmetro.
 	 * 
@@ -25,6 +27,7 @@ public class Fornecedor extends Entidade{
 		this.nome = nome;
 		this.cnpj = cnpj;
 		this.endereco = endereco;
+		this.produtos = new ArrayList<String>();
 	}
 	
 	/**Metódo para retorno de nome do fornecedor
@@ -61,6 +64,14 @@ public class Fornecedor extends Entidade{
 	 * @param endereco Novo endereço do fornecedor*/
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
+	}
+
+	public ArrayList<String> getProdutos() {
+		return produtos;
+	}
+
+	public void setProdutos(ArrayList<String> produtos) {
+		this.produtos = produtos;
 	}
 
 }

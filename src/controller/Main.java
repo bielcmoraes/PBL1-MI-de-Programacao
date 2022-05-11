@@ -1,7 +1,7 @@
 /***************************
 Autores: Gabriel Cordeiro Moraes e Luis Fernando do Rosario Cintra
 Componente Curricular: EXA863 MI Programação
-Concluido em: 11/04/2022
+Concluido em: 10/05/2022
 Declaro que este código foi elaborado por nós de forma individual e não contém nenhum
 trecho de código de outro colega ou de outro autor, tais como provindos de livros e
 apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código
@@ -10,14 +10,27 @@ do código, e estou ciente que estes trechos não serão considerados para fins 
 ******************************/
 package controller;
 
-import java.util.ArrayList;
-
-import controller.BancoDeDados;
-import controller.Login;
-import controller.Menu;
+import PreCadastro.PreCadastro;
+import exceptions.ErroGrave;
+import exceptions.EscolhaIncorreta;
+import exceptions.FormatoDataInvalido;
+import exceptions.FormatoHorarioInvalido;
+import exceptions.FormatoIngredientesInvalido;
+import exceptions.FormatoQuantidadeInvalido;
+import exceptions.FornecedorNaoCadastrado;
+import exceptions.LoginJaCadastrado;
+import exceptions.ProdutoNaoCadastrado;
+import exceptions.QuantidadeInvalida;
+import exceptions.QuantidadeProdutosInsuficiente;
+import exceptions.RelatorioNaoGerado;
+import exceptions.VendaNaoCadastrada;
+import exceptions.NaoEncontrado;
+import exceptions.PratoNaoCadastrado;
+import exceptions.PrecoInvalido;
+import model.BancoDeDados;
 import model.Funcionario;
 import model.Gerente;
-import model.Prato;
+import model.Login;
 import model.Usuario;
 import view.CardapioView;
 import view.FornecedorView;
@@ -38,11 +51,17 @@ public class Main {
 	/**Primeiro e principal método que será executado pela Java Virtual Machine.
 	 * 
 	 * @param args Possiveis parâmetros que podem ser passados para a aplicação a partir da linha de comando.
+	 * @throws ProdutoNaoCadastrado 
 	 */
 	public static void main(String[] args) {
 	
 		//Intancio as listas
 		BancoDeDados dados = new BancoDeDados();
+		PreCadastro preCadastro = new PreCadastro();
+		preCadastro.PreCadastrarFornecedores(dados);
+		preCadastro.PreCadastrarProdutos(dados);
+		preCadastro.PreCadastrarPratos(dados);
+		preCadastro.preCadastrarVendas(dados);
 		
 		while(true) {
 			
@@ -53,11 +72,11 @@ public class Main {
 				String[] infoLogin = LoginView.logar();
 				usuarioLogado = login.autenticarLogin(dados.getListaUsuarios(), infoLogin);
 				if(usuarioLogado == null) {
-					LoginView.erroLogin();
+					System.out.println("Erro no Login! \n Tente novamente!");
 				}
 			}while(usuarioLogado == null);
 			boolean logado = true;
-			
+					
 			while(logado) {
 				if(usuarioLogado instanceof Gerente) {
 					
@@ -67,26 +86,29 @@ public class Main {
 						case 1:
 							System.out.println("Cadastrando Fornecedor");
 							String[] infoCadastroFornecedor = FornecedorView.cadastrarFornecedor();
-							boolean cadastrarFornecedor = ((Gerente) usuarioLogado).cadastrarFornecedor(dados.getListaFornecedores(), dados.getListaIds(), infoCadastroFornecedor);
-							if(cadastrarFornecedor == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).cadastrarFornecedor(dados.getListaFornecedores(), dados.getListaIds(), infoCadastroFornecedor);
+							} catch (ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 2:
 							System.out.println("Editando Fornecedor");
 							String codigoFornecedorEdit = FornecedorView.buscaFornecedor();
 							String [] infoEditFornecedor = FornecedorView.cadastrarFornecedor();
-							boolean editarFornecedor = ((Gerente) usuarioLogado).editarFornecedor(dados.getListaFornecedores(), codigoFornecedorEdit, infoEditFornecedor);
-							if(editarFornecedor == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).editarFornecedor(dados.getListaFornecedores(), codigoFornecedorEdit, infoEditFornecedor);
+							} catch (ErroGrave | NaoEncontrado e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 3:
 							System.out.println("Excluindo Fornecedor");
 							String codigoFornecedorDel = FornecedorView.buscaFornecedor();
-							boolean excluirFornecedor = ((Gerente) usuarioLogado).excluirFornecedor(dados.getListaFornecedores(),dados.getListaIds(), codigoFornecedorDel);
-							if(excluirFornecedor == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).excluirFornecedor(dados.getListaFornecedores(),dados.getListaIds(), codigoFornecedorDel);
+							} catch (ErroGrave | NaoEncontrado e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 4:
@@ -100,26 +122,30 @@ public class Main {
 						case 1:
 							System.out.println("Cadastrando Vendas");
 							String[] info = VendaView.cadastrarVenda();
-							boolean cadastrarVenda = ((Gerente) usuarioLogado).cadastrarVenda(dados.getListaVendas(), dados.getListaIds(), dados.getCardapio(), info);
-							if(cadastrarVenda == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).cadastrarVenda(dados.getListaVendas(), dados.getListaIds(), dados.getCardapio(), info, dados.getListaProdutos());
+							} catch (PratoNaoCadastrado | QuantidadeProdutosInsuficiente | ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 2:
 							System.out.println("Editando Vendas");
 							String codigoVendaEdit = VendaView.buscaVenda();
 							String [] infoEditVenda = VendaView.editarVenda();
-							boolean editarVenda = ((Gerente) usuarioLogado).editarVenda(dados.getListaVendas(), dados.getCardapio(),codigoVendaEdit, infoEditVenda);
-							if(editarVenda == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).editarVenda(dados.getListaVendas(), dados.getCardapio(),codigoVendaEdit, infoEditVenda, dados.getListaProdutos());
+							} catch (FormatoDataInvalido | FormatoHorarioInvalido | PratoNaoCadastrado
+									| QuantidadeProdutosInsuficiente | ErroGrave | VendaNaoCadastrada e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 3:
 							System.out.println("Excluindo Vendas");
 							String codigoVendaDel = VendaView.buscaVenda();
-							boolean excluirVenda = ((Gerente) usuarioLogado).excluirVenda(dados.getListaVendas(), dados.getListaIds(), codigoVendaDel);
-							if(excluirVenda == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).excluirVenda(dados.getListaVendas(), dados.getListaIds(), codigoVendaDel);
+							} catch (VendaNaoCadastrada | ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 4:
@@ -131,26 +157,29 @@ public class Main {
 						case 1:
 							System.out.println("Cadastrando Usuario");
 							String [] infoUsuario = UsuarioView.cadastraUsuario();
-							boolean cadastrarUsuario = ((Gerente) usuarioLogado).cadastrarUsuario(dados.getListaUsuarios(), dados.getListaIds(), infoUsuario);
-							if(cadastrarUsuario == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).cadastrarUsuario(dados.getListaUsuarios(), dados.getListaIds(), infoUsuario);
+							}catch(EscolhaIncorreta | LoginJaCadastrado | ErroGrave a) {
+								System.out.println(a.toString());
 							}
 							break;
 						case 2:
 							System.out.println("Editando Usuario");
 							String codigoUsuarioEdit = UsuarioView.buscaUsuario();
 							String [] infoEditUsuario = UsuarioView.editaUsuario();
-							boolean editarUsuario =((Gerente) usuarioLogado).editarUsuario(dados.getListaUsuarios(), codigoUsuarioEdit, infoEditUsuario);
-							if(editarUsuario == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).editarUsuario(dados.getListaUsuarios(), codigoUsuarioEdit, infoEditUsuario);
+							} catch (NaoEncontrado | ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 3:
 							System.out.println("Excluindo Usuario");
 							String codigoUsuarioDel = UsuarioView.buscaUsuario();
-							boolean excluirUsuario =((Gerente) usuarioLogado).excluirUsuario(dados.getListaUsuarios(), dados.getListaIds(), codigoUsuarioDel);
-							if(excluirUsuario == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).excluirUsuario(dados.getListaUsuarios(), dados.getListaIds(), codigoUsuarioDel);
+							} catch (ErroGrave | NaoEncontrado e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 4:
@@ -162,26 +191,31 @@ public class Main {
 						case 1:
 							System.out.println("Cadastrando Prato");
 							String[] infoCadastro = CardapioView.cadastrarPrato();
-							boolean cadastrarPrato = ((Gerente) usuarioLogado).cadastrarPrato(dados.getCardapio(), dados.getListaIds(), dados.getListaProdutos(), infoCadastro);
-							if(cadastrarPrato == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).cadastrarPrato(dados.getCardapio(), dados.getListaIds(), dados.getListaProdutos(), infoCadastro);
+							} catch (PrecoInvalido | QuantidadeInvalida | FormatoIngredientesInvalido
+									| ErroGrave | NumberFormatException | ProdutoNaoCadastrado e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 2:
 							System.out.println("Editando Prato");
 							String codigoPratoEdit = CardapioView.buscaPrato();
 							String [] infoEdicao = CardapioView.editarPrato();
-							boolean editarPrato = ((Gerente) usuarioLogado).editarPrato(dados.getCardapio(), dados.getListaProdutos(), codigoPratoEdit, infoEdicao);
-							if(editarPrato == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).editarPrato(dados.getCardapio(), dados.getListaProdutos(), codigoPratoEdit, infoEdicao);
+							} catch (PrecoInvalido | QuantidadeInvalida | FormatoIngredientesInvalido | ErroGrave
+									| PratoNaoCadastrado | ProdutoNaoCadastrado e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 3:
 							System.out.println("Excluindo Prato");
 							String codigoPratoDel = CardapioView.buscaPrato();
-							boolean excluirPrato = ((Gerente) usuarioLogado).excluirPrato(dados.getCardapio(), dados.getListaIds(), codigoPratoDel);
-							if(excluirPrato == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).excluirPrato(dados.getCardapio(), dados.getListaIds(), codigoPratoDel);
+							} catch (ErroGrave | PratoNaoCadastrado e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 4:
@@ -193,26 +227,31 @@ public class Main {
 						case 1:
 							System.out.println("Cadastrando Produtos");
 							String[] infoCadastroProduto = ProdutosView.cadastrarProduto();
-							boolean cadastrarProduto = ((Gerente) usuarioLogado).cadastrarProduto(dados.getListaProdutos(), dados.getListaIds(), infoCadastroProduto);
-							if(cadastrarProduto == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).cadastrarProduto(dados.getListaProdutos(), dados.getListaIds(), infoCadastroProduto, dados.getListaFornecedores());
+							} catch (PrecoInvalido | FormatoQuantidadeInvalido | QuantidadeInvalida
+									| FormatoDataInvalido | FornecedorNaoCadastrado | ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 2:
 							System.out.println("Editando Produtos");
 							String codigoProdutoEdit = ProdutosView.buscaProduto();
 							String [] infoProdutoEdit = ProdutosView.editarProduto();
-							boolean editarProduto = ((Gerente) usuarioLogado).editarProduto(dados.getListaProdutos(), codigoProdutoEdit, infoProdutoEdit);
-							if(editarProduto == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).editarProduto(dados.getListaProdutos(), codigoProdutoEdit, infoProdutoEdit, dados.getListaFornecedores());
+							} catch (PrecoInvalido | FormatoQuantidadeInvalido | QuantidadeInvalida
+									| FormatoDataInvalido | FornecedorNaoCadastrado | ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 3:
 							System.out.println("Excluindo Produtos");
 							String codigoProdutoDel = ProdutosView.buscaProduto();
-							boolean excluirProduto = ((Gerente) usuarioLogado).excluirProduto(dados.getListaProdutos(), dados.getListaIds(), codigoProdutoDel);
-							if(excluirProduto == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Gerente) usuarioLogado).excluirProduto(dados.getListaProdutos(), dados.getListaIds(), codigoProdutoDel);
+							} catch (ProdutoNaoCadastrado | ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 4:
@@ -241,6 +280,84 @@ public class Main {
 						}
 					}
 					else if(decisao[0] == 7) {
+						switch(decisao[1]) {
+						case 1:
+							try {
+								((Gerente) usuarioLogado).vendasTotal(dados.getListaVendas());
+								System.out.println("Relatorio gerado com sucesso!!!");
+							} catch (ErroGrave | RelatorioNaoGerado e1) {
+								System.out.println(e1.toString());
+							}
+							break;
+						
+						case 2:
+							try {
+								((Gerente) usuarioLogado).vendasPorPeriodo(dados.getListaVendas());
+								System.out.println("Relatoris gerados com sucesso!!!");
+							} catch (ErroGrave e1) {
+								System.out.println(e1.toString());
+							}
+							break;
+							
+						case 3:
+							try {
+								((Gerente) usuarioLogado).vendasPorTipoDePrato(dados.getListaVendas());
+								System.out.println("Relatorio gerado com sucesso!!!");
+							} catch (ErroGrave | RelatorioNaoGerado e1) {
+								System.out.println(e1.toString());
+							}
+							break;
+							
+						case 4:
+							try {
+								((Gerente) usuarioLogado).estoqueTotal(dados.getListaProdutos());
+								System.out.println("Relatorio gerado com sucesso!!!");
+							} catch (RelatorioNaoGerado | ErroGrave e) {
+								System.out.println(e.toString());
+							}
+							break;
+							
+						case 5:
+							try {
+								((Gerente) usuarioLogado).estoquePorProduto(dados.getListaProdutos());
+								System.out.println("Relatorio gerado com sucesso!!!");
+							} catch (RelatorioNaoGerado | ErroGrave e) {
+								System.out.println(e.toString());
+							}
+							break;
+							
+						case 6:
+							try {
+								((Gerente) usuarioLogado).estoqueProdutosPertoDeVencer(dados.getListaProdutos());
+								System.out.println("Relatorio gerado com sucesso!!!");
+							} catch (ErroGrave | RelatorioNaoGerado e) {
+								System.out.println(e.toString());
+							}
+							break;
+							
+						case 7:
+							try {
+								((Gerente) usuarioLogado).fornecedorPorProduto(dados.getListaProdutos());
+								System.out.println("Relatorio gerado com sucesso!!!");
+							} catch (RelatorioNaoGerado | ErroGrave e) {
+								System.out.println(e.toString());
+							}
+							break;
+							
+						case 8:
+							try {
+								((Gerente) usuarioLogado).fornecedorPorFornecedor(dados.getListaFornecedores());
+								System.out.println("Relatorio gerado com sucesso!!!");
+							} catch (RelatorioNaoGerado | ErroGrave e) {
+								System.out.println(e.toString());
+							}
+							break;
+						
+						case 9:
+							break;
+						}
+						}
+					else if(decisao[0] == 8) {
 						logado = false;
 						}
 				}
@@ -252,26 +369,30 @@ public class Main {
 						case 1:
 							System.out.println("Cadastrando Vendas");
 							String[] info = VendaView.cadastrarVenda();
-							boolean cadastrarVenda = ((Funcionario) usuarioLogado).cadastrarVenda(dados.getListaVendas(), dados.getListaIds(), dados.getCardapio(), info);
-							if(cadastrarVenda == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Funcionario) usuarioLogado).cadastrarVenda(dados.getListaVendas(), dados.getListaIds(), dados.getCardapio(), info, dados.getListaProdutos());
+							} catch (PratoNaoCadastrado | QuantidadeProdutosInsuficiente | ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 2:
 							System.out.println("Editando Vendas");
 							String codigoVendaEdit = VendaView.buscaVenda();
 							String [] infoEditVenda = VendaView.editarVenda();
-							boolean editarVenda = ((Funcionario) usuarioLogado).editarVenda(dados.getListaVendas(), dados.getCardapio(),codigoVendaEdit, infoEditVenda);
-							if(editarVenda == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Funcionario) usuarioLogado).editarVenda(dados.getListaVendas(), dados.getCardapio(),codigoVendaEdit, infoEditVenda, dados.getListaProdutos());
+							} catch (FormatoDataInvalido | FormatoHorarioInvalido | PratoNaoCadastrado
+									| QuantidadeProdutosInsuficiente | ErroGrave | VendaNaoCadastrada e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 3:
 							System.out.println("Excluindo Vendas");
 							String codigoVendaDel = VendaView.buscaVenda();
-							boolean excluirVenda = ((Funcionario) usuarioLogado).excluirVenda(dados.getListaVendas(), dados.getListaIds(), codigoVendaDel);
-							if(excluirVenda == false) {
-								SubMenuView.erroGerenciamentos();
+							try {
+								((Funcionario) usuarioLogado).excluirVenda(dados.getListaVendas(), dados.getListaIds(), codigoVendaDel);
+							} catch (VendaNaoCadastrada | ErroGrave e) {
+								System.out.println(e.toString());
 							}
 							break;
 						case 4:

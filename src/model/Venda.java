@@ -6,7 +6,8 @@ import java.util.ArrayList;
 
 /**Classe para objetos do tipo Venda, onde são contidos, valores e metódos necessarios para implementação da classe.
  * 
- * @author Gabriel Moraes e Luis Fernando Cintra
+ * @author Gabriel Moraes
+ * @author Luis Fernando Cintra
  * @see Entidade
  */
 public class Venda extends Entidade{
@@ -28,11 +29,11 @@ public class Venda extends Entidade{
 	 * @param precoTotal Preço total da venda
 	 * @param metodoDePagamento Forma de pagamento da venda
 	 */
-	public Venda(ArrayList<String> listaIds, LocalDate data, LocalTime horario, ArrayList<Prato> pratos, Double precoTotal, String metodoDePagamento) {
+	public Venda(ArrayList<String> listaIds, ArrayList<Prato> pratos, Double precoTotal, String metodoDePagamento) {
 		
 		super(listaIds);
-		this.data = data;
-		this.horario = horario;
+		this.data = LocalDate.now();
+		this.horario = LocalTime.now();
 		this.pratos = pratos;
 		this.precoTotal = precoTotal;
 		this.metodoDePagamento = metodoDePagamento;

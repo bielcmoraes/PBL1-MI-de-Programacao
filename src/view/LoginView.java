@@ -29,12 +29,4 @@ public class LoginView {
 		validacao[1] = senha;
 		return validacao;
 	}
-	
-	/**Exibe mensagem de erro na validação de login.
-	 */
-	public static void erroLogin() {
-		System.out.println("\n");
-		System.out.println("Não foi possível logar!");
-		System.out.println("Tente novamente!");
-	}
 }

@@ -1,4 +1,5 @@
-/**Contém as classes de entidades do sistema e as interfaces.
- * @author Gabriel Moraes e Luis Fernando Cintra
+/**Contém as classes responsáveis por dar forma ao sistema.
+ * @author Gabriel Moraes
+ * @author Luis Fernando Cintra
  */
 package model;

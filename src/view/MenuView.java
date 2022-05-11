@@ -26,7 +26,8 @@ public class MenuView {
 		System.out.println("Digite 4 para gerenciar o cardapio");
 		System.out.println("Digite 5 para gerenciar os produtos");
 		System.out.println("Digite 6 para acessar o menu de listagem");
-		System.out.println("Digite 7 para deslogar");
+		System.out.println("Digite 7 para gerar relatorios PDF");
+		System.out.println("Digite 8 para deslogar");
 		
 		String resposta = input.nextLine();
 		return resposta;

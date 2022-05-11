@@ -20,11 +20,6 @@ public class VendaView {
 		System.out.println("= CADASTRAR VENDA =");
 		System.out.println("===================");
 		Scanner input = new Scanner(System.in);
-		System.out.println("Digite a data da venda");
-		String data = input.nextLine();
-		
-		System.out.println("Digite o horario da venda");
-		String horario = input.nextLine();
 		
 		System.out.println("Digite os pratos da venda");
 		String pratos = input.nextLine();
@@ -32,12 +27,10 @@ public class VendaView {
 		System.out.println("Digite o metodo de pagamento");
 		String metodoDePagamento = input.nextLine();
 		
-		String [] info = new String[4];
+		String [] info = new String[2];
 		
-		info[0] = data;
-		info[1] = horario;
-		info[2] = pratos;
-		info[3] = metodoDePagamento;
+		info[0] = pratos;
+		info[1] = metodoDePagamento;
 		
 		return info;
 	}

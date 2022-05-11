@@ -2,515 +2,296 @@ package testes;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import controller.BancoDeDados;
-import controller.GerenciaCardapio;
-import controller.GerenciaProdutos;
-import controller.GerenciaVendas;
+import exceptions.ErroGrave;
+import exceptions.FormatoDataInvalido;
+import exceptions.FormatoHorarioInvalido;
+import exceptions.FormatoIngredientesInvalido;
+import exceptions.FormatoQuantidadeInvalido;
+import exceptions.FornecedorNaoCadastrado;
+import exceptions.PratoNaoCadastrado;
+import exceptions.PrecoInvalido;
+import exceptions.ProdutoNaoCadastrado;
+import exceptions.QuantidadeInvalida;
+import exceptions.QuantidadeProdutosInsuficiente;
+import exceptions.VendaNaoCadastrada;
+import model.BancoDeDados;
+import model.GerenciaCardapio;
+import model.GerenciaFornecedor;
+import model.GerenciaProdutos;
+import model.GerenciaVendas;
 
 class GerenciaVendaTest {
 
-	@Test
-	void CadastrarVendaComDadosValidos() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
+	BancoDeDados bancoDeDados = new BancoDeDados();
+	GerenciaFornecedor gerenciaFornecedores = new GerenciaFornecedor();
+	GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
+	GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
+	GerenciaVendas gerenciaVendas = new GerenciaVendas();
+	String codigoVenda;
+	
+	@BeforeEach
+	void CadastrandoVenda() throws ErroGrave, PrecoInvalido, FormatoQuantidadeInvalido, QuantidadeInvalida, FormatoDataInvalido, FornecedorNaoCadastrado, ProdutoNaoCadastrado, FormatoIngredientesInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente {
+		String [] infoFornecedor = new String[3];
+		infoFornecedor[0] = "Joao";
+		infoFornecedor[1] = "77.994.900/0001-26";
+		infoFornecedor[2] = "Rua A";
+		gerenciaFornecedores.cadastrarFornecedor(bancoDeDados.getListaFornecedores(), bancoDeDados.getListaIds(), infoFornecedor);
 		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
+		String [] infoProduto = new String[5] ;
+		infoProduto[0] = "Pao";
+		infoProduto[1] = "1";
+		infoProduto[2] = "3 un";
+		infoProduto[3] = "28/07/2022";
+		infoProduto[4] = "Joao";
+		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto, bancoDeDados.getListaFornecedores());
 		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
+		infoProduto[0] = "Salsicha";
+		infoProduto[1] = "1";
+		infoProduto[2] = "3 un";
+		infoProduto[3] = "28/07/2022";
+		infoProduto[4] = "Joao";
+		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto, bancoDeDados.getListaFornecedores());
+	
+		String [] infoPrato = new String[5];
+		
+		infoPrato[0] = "Cachorro Quente";
+		infoPrato[1] = "2";
+		infoPrato[2] = "Cachorro quente simples";
+		infoPrato[3] = "Lanche";
+		infoPrato[4] = "1;un;Salsicha;1;un;Pao;";
+		
 		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
 		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
+		infoPrato[0] = "Cachorro Quente Duplo";
+		infoPrato[1] = "3";
+		infoPrato[2] = "Cachorro quente com 2 salsichas";
+		infoPrato[3] = "Lanche";
+		infoPrato[4] = "2;un;Salsicha;1;un;Pao;";
 		
-		assertEquals(1, bancoDeDados.getListaVendas().size(),"Tamanho de listaVendas apos cadastro de 1 venda");
+		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
+		
+		String [] infoVenda = new String[2];
+		
+		infoVenda[0] = "Cachorro Quente";
+		infoVenda[1] = "Pix";
+		
+		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda, bancoDeDados.getListaProdutos());
+	
+		codigoVenda = bancoDeDados.getListaVendas().get(0).getId();
 	}
 	
 	@Test
-	void CadastrarVendaComDataInvalida() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
+	void CadastrandoVendaDeUmPratoCadastrado() throws PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[2];
 		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
+		info[0] = "Cachorro Quente";
+		info[1] = "Pix";
 		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "3000/3000/3000"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		assertEquals(0, bancoDeDados.getListaVendas().size(),"Tamanho de listaVendas apos cadastro de 1 venda");
+		assertTrue(gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), info, bancoDeDados.getListaProdutos()),
+		"Tentando cadastrar uma venda de um prato cadastrado");
 	}
 	
 	@Test
-	void CadastrarVendaComHorarioInvalido() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
+	void CadastrandoVendaDeUmPratoNaoCadastrado() throws PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[2];
 		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
+		info[0] = "Cachorro Quente Vegano";
+		info[1] = "Pix";
 		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "30:70"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		assertEquals(0, bancoDeDados.getListaVendas().size(),"Tamanho de listaVendas apos cadastro de 1 venda");
+		assertThrows(PratoNaoCadastrado.class, () -> gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), info, bancoDeDados.getListaProdutos()),
+		"Tentando cadastrar uma venda de um prato nao cadastrado");
 	}
 	
 	@Test
-	void CadastrarVendaComPratoInvalido() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
+	void CadastrandoVendaComQuantidadeDeProdutosInsuficiente() throws PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[2];
 		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
+		info[0] = "Cachorro Quente, Cachorro Quente Duplo";
+		info[1] = "Pix";
 		
-		assertEquals(0, bancoDeDados.getListaVendas().size(),"Tamanho de listaVendas apos cadastro de 1 venda");
+		assertThrows(QuantidadeProdutosInsuficiente.class, () -> gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), info, bancoDeDados.getListaProdutos()),
+		"Tentando cadastrar uma venda com quantidade de produtos insuficiente");
+	}
+	
+	@Test
+	void CadastrandoVendaEmListaNaoInstanciada() throws PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[2];
+		
+		info[0] = "Cachorro Quente";
+		info[1] = "Pix";
+		
+		assertThrows(ErroGrave.class, () -> gerenciaVendas.cadastrarVenda(null, bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), info, bancoDeDados.getListaProdutos()),
+		"Tentando cadastrar uma venda em uma lista nao instanciada");
+	}
+	
+	@Test
+	void CadastrandoTresVendasComProdutosCadastrados() throws PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[2];
+		
+		info[0] = "Cachorro Quente";
+		info[1] = "Pix";
+		
+		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), info, bancoDeDados.getListaProdutos());
+		
+		info[0] = "Cachorro Quente";
+		info[1] = "Pix";
+		
+		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), info, bancoDeDados.getListaProdutos());
+		
+		assertEquals(0, bancoDeDados.getListaProdutos().size(), "Verificando se os produtos utilizados na venda estam sendo removidos da lista de produtos");
+		
+	}
+	
+	@Test
+	void EditandoVendaCadastradaComPratoCadastrado() throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave, VendaNaoCadastrada {
+		String [] info = new String[4];
+		
+		info[0] = "10/10/2022";
+		info[1] = "10:10";
+		info[2] = "Cachorro Quente";
+		info[3] = "Pix";
+
+		assertTrue(gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), codigoVenda, info, bancoDeDados.getListaProdutos()),
+		"Tentando editar uma venda cadastrada com um prato cadastrado");
+		
+	}
+	
+	@Test
+	void EditandoVendaNaoCadastradaComPratoCadastrado() throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[4];
+		
+		info[0] = "10/10/2022";
+		info[1] = "10:10";
+		info[2] = "Cachorro Quente";
+		info[3] = "Pix";
+
+		assertThrows(VendaNaoCadastrada.class, () -> gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), "-999", info, bancoDeDados.getListaProdutos()),
+		"Tentando editar uma venda nao cadastrada com um prato cadastrado");	
+	}
+	
+	@Test
+	void EditandoVendaCadastradaComPratoNaoCadastrado() throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[4];
+		
+		info[0] = "10/10/2022";
+		info[1] = "10:10";
+		info[2] = "Cachorro Quente Vegano";
+		info[3] = "Pix";
+
+		assertThrows(PratoNaoCadastrado.class, () -> gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), codigoVenda, info, bancoDeDados.getListaProdutos()),
+		"Tentando editar uma venda cadastrada com um prato nao cadastrado");	
+	}
+	
+	@Test
+	void EditandoVendaCadastradaComFormatoDaDataInvalido() throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[4];
+		
+		info[0] = "10 10 2022";
+		info[1] = "10:10";
+		info[2] = "Cachorro Quente";
+		info[3] = "Pix";
+
+		assertThrows(FormatoDataInvalido.class, () -> gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), codigoVenda, info, bancoDeDados.getListaProdutos()),
+		"Tentando editar uma venda cadastrada com formato da data invalido");	
+	}
+	
+	@Test
+	void EditandoVendaCadastradaComFormatoDoHorarioInvalido() throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[4];
+		
+		info[0] = "10/10/2022";
+		info[1] = "10 10";
+		info[2] = "Cachorro Quente";
+		info[3] = "Pix";
+
+		assertThrows(FormatoHorarioInvalido.class, () -> gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), codigoVenda, info, bancoDeDados.getListaProdutos()),
+		"Tentando editar uma venda cadastrada com formato do horario invalido");	
+	}
+	
+	@Test
+	void EditandoVendaCadastradaComQuantidadeDeProdutosInsuficiente() throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[4];
+		
+		info[0] = "10/10/2022";
+		info[1] = "10:10";
+		info[2] = "Cachorro Quente Duplo, Cachorro Quente Duplo";
+		info[3] = "Pix";
+
+		assertThrows(QuantidadeProdutosInsuficiente.class, () -> gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), codigoVenda, info, bancoDeDados.getListaProdutos()),
+		"Tentando editar uma venda cadastrada com quantidade de produtos insuficientes");	
+	}
+	
+	@Test
+	void EditandoVendaEmListaNaoInstanciada() throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
+		String [] info = new String[4];
+		
+		info[0] = "10/10/2022";
+		info[1] = "10:10";
+		info[2] = "Cachorro Quente";
+		info[3] = "Pix";
+
+		assertThrows(ErroGrave.class, () -> gerenciaVendas.editarVenda(null, bancoDeDados.getCardapio(), codigoVenda, info, bancoDeDados.getListaProdutos()),
+		"Tentando editar uma venda em uma lista nao instanciada");	
+	}
+	
+	@Test
+	void EditandoVendaCadastradaComDoisPratosCadastrados() throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave, VendaNaoCadastrada {
+		String [] info = new String[4];
+		
+		info[0] = "10/10/2022";
+		info[1] = "10:10";
+		info[2] = "Cachorro Quente, Cachorro Quente, Cachorro Quente";
+		info[3] = "Pix";
+		
+		gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), codigoVenda, info, bancoDeDados.getListaProdutos());
+		
+		assertEquals(0, bancoDeDados.getListaProdutos().size(), "Verificando se os produtos sobresalentes da venda foram removidos da lista de produtos");
+	}
+	
+	@Test
+	void ExcluindoVendaCadastrada() throws VendaNaoCadastrada, ErroGrave {
+		assertTrue(gerenciaVendas.excluirVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), codigoVenda),
+		"Tentando excluir uma venda cadastrada");
+	}
+	
+	@Test
+	void ExcluindoVendaNaoCadastrada() throws VendaNaoCadastrada, ErroGrave {
+		assertThrows(VendaNaoCadastrada.class, () -> gerenciaVendas.excluirVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), "-999"),
+		"Tentando excluir uma venda nao cadastrada");
+	}
+	
+	@Test
+	void ExcluindoVendaEmListaNaoInstanciada() throws VendaNaoCadastrada, ErroGrave {
+		assertThrows(ErroGrave.class, () -> gerenciaVendas.excluirVenda(null, bancoDeDados.getListaIds(), codigoVenda),
+		"Tentando excluir uma venda em lista nao instanciada");
 	}
 
 	@Test
-	void VerificarPrecoTotalDaVendaAposCadastro() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
+	void ExcluindoTresVendasCadastradas() throws VendaNaoCadastrada, ErroGrave, PratoNaoCadastrado, QuantidadeProdutosInsuficiente {
+String [] infoVenda = new String[2];
 		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
+		infoVenda[0] = "Cachorro Quente";
+		infoVenda[1] = "Pix";
 		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
+		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda, bancoDeDados.getListaProdutos());
 		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola, Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		assertEquals(11.0, bancoDeDados.getListaVendas().get(0).getPrecoTotal(),"precoTotal da venda apos o cadastro");
-	}
+		String codigoVenda2 = bancoDeDados.getListaVendas().get(1).getId();
 	
-	@Test
-	void EditarVendaNaoCadastrada() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
+		infoVenda[0] = "Cachorro Quente";
+		infoVenda[1] = "Pix";
 		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		
-		assertFalse(gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), "999", infoVenda),"Editando 1 venda não cadastrada da listaVendas");
-	}
+		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda, bancoDeDados.getListaProdutos());
 	
-	@Test
-	void EditarVendaCadastradaComDadosNovosValidos() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
+		String codigoVenda3 = bancoDeDados.getListaVendas().get(2).getId();
 		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
+		gerenciaVendas.excluirVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), codigoVenda);
+		gerenciaVendas.excluirVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), codigoVenda2);
+		gerenciaVendas.excluirVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), codigoVenda3);
 		
-		infoProduto[0] = "Fanta"; // Nome
-		infoProduto[1] = "3.5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		infoPrato[0] = "Fanta"; // Nome
-		infoPrato[1] = "4"; // Preco;
-		infoPrato[2] = "Uma Fanta geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Fanta"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		String id = bancoDeDados.getListaVendas().get(0).getId();
-		
-		infoVenda[0] = "12/05/2022"; // Data
-		infoVenda[1] = "15:15"; // Horario
-		infoVenda[2] = "Fanta";// Pratos
-		infoVenda[3] = "Debito";// MetodoDePagamento
-		
-		assertTrue(gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), id, infoVenda),"Editando 1 venda cadastrada da listaVendas");
-	}
-	
-	@Test
-	void EditarVendaCadastradaComDataNovaInvalida() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
-		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		infoProduto[0] = "Fanta"; // Nome
-		infoProduto[1] = "3.5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		infoPrato[0] = "Fanta"; // Nome
-		infoPrato[1] = "4"; // Preco;
-		infoPrato[2] = "Uma Fanta geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Fanta"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		String id = bancoDeDados.getListaVendas().get(0).getId();
-		
-		infoVenda[0] = "300/3000/3000"; // Data
-		infoVenda[1] = "15:15"; // Horario
-		infoVenda[2] = "Fanta";// Pratos
-		infoVenda[3] = "Debito";// MetodoDePagamento
-		
-		assertFalse(gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), id, infoVenda),"Editando 1 venda cadastrada da listaVendas");
-	}
-	
-	@Test
-	void EditarVendaCadastradaComHorarioNovoInvalido() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
-		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		infoProduto[0] = "Fanta"; // Nome
-		infoProduto[1] = "3.5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		infoPrato[0] = "Fanta"; // Nome
-		infoPrato[1] = "4"; // Preco;
-		infoPrato[2] = "Uma Fanta geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Fanta"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		String id = bancoDeDados.getListaVendas().get(0).getId();
-		
-		infoVenda[0] = "12/05/2022"; // Data
-		infoVenda[1] = "30:70"; // Horario
-		infoVenda[2] = "Fanta";// Pratos
-		infoVenda[3] = "Debito";// MetodoDePagamento
-		
-		assertFalse(gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), id, infoVenda),"Editando 1 venda cadastrada da listaVendas");
-	}
-	
-	@Test
-	void EditarVendaCadastradaComPratoInvalido() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
-		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		String id = bancoDeDados.getListaVendas().get(0).getId();
-		
-		infoVenda[0] = "12/05/2022"; // Data
-		infoVenda[1] = "15:15"; // Horario
-		infoVenda[2] = "Fanta";// Pratos
-		infoVenda[3] = "Debito";// MetodoDePagamento
-		
-		assertFalse(gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), id, infoVenda),"Editando 1 venda cadastrada da listaVendas");
-	}
-	
-	@Test
-	void VerificarPrecoTotalDaVendaAposEdicao() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
-		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		infoProduto[0] = "Fanta"; // Nome
-		infoProduto[1] = "3.5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		infoPrato[0] = "Fanta"; // Nome
-		infoPrato[1] = "4"; // Preco;
-		infoPrato[2] = "Uma Fanta geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Fanta"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		String id = bancoDeDados.getListaVendas().get(0).getId();
-		
-		infoVenda[0] = "12/05/2022"; // Data
-		infoVenda[1] = "15:15"; // Horario
-		infoVenda[2] = "Fanta, Fanta";// Pratos
-		infoVenda[3] = "Debito";// MetodoDePagamento
-		gerenciaVendas.editarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getCardapio(), id, infoVenda);
-		
-		assertEquals(8.0, bancoDeDados.getListaVendas().get(0).getPrecoTotal(),"precoTotal da venda apos o edicao");
-	}
-	
-	@Test
-	void ExcluirVendaNaoCadastrada() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
-		
-		assertFalse(gerenciaVendas.excluirVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), "999"),"Excluindo 1 venda nao cadastrada");
-	}
-	
-	@Test
-	void ExcluirVendaCadastrada() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
-		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		String id = bancoDeDados.getListaVendas().get(0).getId();
-		
-		gerenciaVendas.excluirVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), id);
-		assertEquals(0, bancoDeDados.getListaVendas().size(),"Excluindo 1 venda cadastrada");
-	}
-	
-	@Test
-	void ExcluirUmaVendaCadastradaEmListaComDuasVendasCadastradas() {
-		BancoDeDados bancoDeDados = new BancoDeDados();
-		GerenciaProdutos gerenciaProdutos = new GerenciaProdutos();
-		GerenciaCardapio gerenciaCardapio = new GerenciaCardapio();
-		GerenciaVendas gerenciaVendas = new GerenciaVendas();
-		
-		String [] infoProduto = new String[3] ;
-		infoProduto[0] = "Coca-Cola"; // Nome
-		infoProduto[1] = "5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		infoProduto[0] = "Fanta"; // Nome
-		infoProduto[1] = "3.5"; // Preco
-		infoProduto[2] = "10/10/2022"; // Validade
-		gerenciaProdutos.cadastrarProduto(bancoDeDados.getListaProdutos(), bancoDeDados.getListaIds(), infoProduto);
-		
-		String [] infoPrato = new String[5] ;
-		infoPrato[0] = "Coca-Cola"; // Nome
-		infoPrato[1] = "5.5"; // Preco;
-		infoPrato[2] = "Uma Coca-Cola geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Coca-Cola"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		infoPrato[0] = "Fanta"; // Nome
-		infoPrato[1] = "4"; // Preco;
-		infoPrato[2] = "Uma Fanta geladinha"; // Descricao
-		infoPrato[3] = "Bebida"; // Categoria
-		infoPrato[4] = "Fanta"; // Produtos
-		gerenciaCardapio.cadastrarPrato(bancoDeDados.getCardapio(), bancoDeDados.getListaIds(), bancoDeDados.getListaProdutos(), infoPrato);
-		
-		String [] infoVenda = new String[4];
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Coca-Cola";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-
-		infoVenda[0] = "11/04/2022"; // Data
-		infoVenda[1] = "14:14"; // Horario
-		infoVenda[2] = "Fanta";// Pratos
-		infoVenda[3] = "Credito";// MetodoDePagamento
-		gerenciaVendas.cadastrarVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), bancoDeDados.getCardapio(), infoVenda);
-		
-		String id = bancoDeDados.getListaVendas().get(0).getId();
-		
-		gerenciaVendas.excluirVenda(bancoDeDados.getListaVendas(), bancoDeDados.getListaIds(), id);
-		assertEquals("Fanta", bancoDeDados.getListaVendas().get(0).getPratos().get(0).getNome(),"Excluindo 1 venda cadastrada");
+		assertEquals(0, bancoDeDados.getListaVendas().size(), "Verificando se a lista esta vazia apos a exclusao dos tres vendas cadastradas");
 	}
 	
 }

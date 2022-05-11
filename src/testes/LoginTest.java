@@ -1,17 +1,17 @@
 package testes;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+import junit.framework.*;
 import org.junit.jupiter.api.Test;
 
-import controller.BancoDeDados;
-import controller.Login;
+import model.BancoDeDados;
+import model.Login;
 import model.Usuario;
 
-class LoginTest {
+public class LoginTest {
 	
 	@Test
-	void autenticaLoginListaUsuarioNull(){
+	public void autenticaLoginListaUsuarioNull(){
 		BancoDeDados bd = new BancoDeDados();
 		Login lo = new Login(bd.getListaUsuarios());
 		String[] info = new String[2];
@@ -21,7 +21,7 @@ class LoginTest {
 	}
 	
 	@Test
-	void falhaAutenticaLogin() {
+	public void falhaAutenticaLogin() {
 		BancoDeDados bd = new BancoDeDados();
 		Login lo = new Login(bd.getListaUsuarios());
 		String[] info = new String[2];
@@ -31,7 +31,7 @@ class LoginTest {
 	}
 	
 	@Test
-	void logandoComSucesso() {
+	public void logandoComSucesso() {
 		BancoDeDados bd = new BancoDeDados();
 		Login lo = new Login(bd.getListaUsuarios());
 		String[] info = new String[2];

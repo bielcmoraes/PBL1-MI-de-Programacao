@@ -32,8 +32,28 @@ public class CardapioView {
 		System.out.println("Digite a categoria");
 		String categoria = input.nextLine();
 		
-		System.out.println("Digite os produtos");
-		String produtos = input.nextLine();
+		int c = 1;
+		String ingredientes = "";
+		String ingredienteNome;
+		String ingredienteMed;
+		String ingredienteQuant;
+		String adicionarOutro;
+		
+		System.out.println("\n Digite os ingredientes");
+		
+		do {
+			System.out.println("\n"+ c + "º ingrediente");
+			System.out.println("Nome: ");
+			ingredienteNome = input.nextLine();
+			System.out.println("Unidade de Medida: ");
+			ingredienteMed = input.nextLine();
+			System.out.println("Quantidade: ");
+			ingredienteQuant = input.nextLine();
+			ingredientes += ingredienteQuant + ";" + ingredienteMed + ";" + ingredienteNome + ";";
+			System.out.println("Adicionar Outro (S/N)? ");
+			adicionarOutro = input.nextLine();
+			c++;
+		} while (!(adicionarOutro.equals("N")));
 		
 		String [] info = new String[5];
 		
@@ -41,7 +61,7 @@ public class CardapioView {
 		info[1] = preco;
 		info[2] = descricao;
 		info[3] = categoria;
-		info[4] = produtos;
+		info[4] = ingredientes;
 		
 		return info;
 	}

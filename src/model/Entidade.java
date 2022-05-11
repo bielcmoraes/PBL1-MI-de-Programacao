@@ -5,7 +5,8 @@ import java.util.Random;
 
 /**Classe abstrata que contém um atributo id, além dos metódos necessarios para que o id seja único e utilizado nas classes necessarias.
  * 
- * @author Gabriel Moraes e Luis Fernando Cintra
+ * @author Gabriel Moraes
+ * @author Luis Fernando Cintra
  *
  */
 public abstract class Entidade {

@@ -5,10 +5,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
-import controller.BancoDeDados;
+import model.BancoDeDados;
 import model.Fornecedor;
 import model.Funcionario;
 import model.Gerente;
@@ -45,16 +46,17 @@ class BancoDeDadosTest {
 	@Test
 	void adicionandoUmPratoNoCardapioVazio() {
 		BancoDeDados bd = new BancoDeDados();
-		Prato p1 = new Prato(bd.getListaIds(), "Pizza", 22.45, "Pizza media", "Massas", bd.getListaProdutos());;
+		HashMap<String, Double> receita = new HashMap<String, Double>();
+		Prato p1 = new Prato(bd.getListaIds(), "Pizza", 22.45, "Pizza media", "Massas", bd.getListaProdutos(),receita);
 		ArrayList<Prato> c = bd.getCardapio();
 		c.add(p1);
 		assertEquals(p1,c.get(0), "Adicionando um prato ao cardapio");
 	}
 	
 	@Test
-	void listaProdutoVazia() {
+	void estoqueProdutoVazio() {
 		BancoDeDados bd = new BancoDeDados();
-		ArrayList<Produto> lp = bd.getListaProdutos();
+		HashMap<String, ArrayList<Produto>> lp = bd.getListaProdutos();
 		assertTrue(lp.isEmpty(), "Lista de fornecedores vazia");
 	}
 	
@@ -62,10 +64,12 @@ class BancoDeDadosTest {
 	void adicionandoUmProdutoNaListaVazia() {
 		BancoDeDados bd = new BancoDeDados();
 		LocalDate validade = LocalDate.of(2022, 07, 22);
-		Produto p1 = new Produto(bd.getListaIds(), "Tomate", 5.77, validade);
-		ArrayList<Produto> lp = bd.getListaProdutos();
-		lp.add(p1);
-		assertEquals(p1, lp.get(0), "Adicionando um produto a lista");
+		ArrayList<Fornecedor> f1 = new ArrayList();
+		Produto p1 = new Produto(bd.getListaIds(), "Tomate", 5.77, 50.00, "kg", validade, f1);
+		HashMap<String, ArrayList<Produto>> lp= bd.getListaProdutos();
+		lp.put(p1.getNome(), new ArrayList<Produto>());
+		lp.get(p1.getNome()).add(p1);
+		assertEquals(p1, lp.get(p1.getNome()).get(0), "Adicionando um produto a lista");
 	}
 	
 	@Test
@@ -103,9 +107,7 @@ class BancoDeDadosTest {
 	@Test
 	void adicionandoUmaVendaNaLista() {
 		BancoDeDados bd = new BancoDeDados();
-		LocalDate data = LocalDate.of(2022, 03, 12);
-		LocalTime hora = LocalTime.of(15, 30, 55);
-		Venda v1 = new Venda(bd.getListaIds(), data, hora, bd.getCardapio(), 99.55, "Credito");
+		Venda v1 = new Venda(bd.getListaIds(), bd.getCardapio(), 99.55, "Credito");
 		ArrayList<Venda> v = bd.getListaVendas();
 		v.add(v1);
 		assertEquals(v1,v.get(0), "Adicionando uma venda na lista de vendas");

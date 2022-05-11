@@ -1,12 +1,19 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import controller.GerenciaVendas;
+import exceptions.ErroGrave;
+import exceptions.FormatoDataInvalido;
+import exceptions.FormatoHorarioInvalido;
+import exceptions.PratoNaoCadastrado;
+import exceptions.QuantidadeProdutosInsuficiente;
+import exceptions.VendaNaoCadastrada;
 import view.ListagemView;
 /**Classe para objetos do tipo Funcionario, onde são contidos, valores e metódos necessários para a implementação da classe.
  * 
- * @author Gabriel Moraes e Luis Fernando Cintra
+ * @author Gabriel Moraes
+ * @author Luis Fernando Cintra
  * @see Usuario
  */
 public class Funcionario extends Usuario implements VendaCopyable, ListagemCopyable{
@@ -28,12 +35,15 @@ public class Funcionario extends Usuario implements VendaCopyable, ListagemCopya
 	 * @param cardapio Cardapio (lista de pratos)
 	 * @param info Entradas do usuário
 	 * @return Boolean cadastrarVenda
+	 * @throws ErroGrave 
+	 * @throws QuantidadeProdutosInsuficiente 
+	 * @throws PratoNaoCadastrado 
 	 */
 	@Override
 	public boolean cadastrarVenda(ArrayList<Venda> listaVendas, ArrayList<String> listaIds, ArrayList<Prato> cardapio,
-			String[] info) {
+			String[] info, HashMap<String, ArrayList<Produto>> listaProdutos) throws PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave {
 		GerenciaVendas gerenciamentoVendas = new GerenciaVendas();
-		return gerenciamentoVendas.cadastrarVenda(listaVendas, listaIds, cardapio, info);
+		return gerenciamentoVendas.cadastrarVenda(listaVendas, listaIds, cardapio, info, listaProdutos);
 	}
 	
 	/**Metódo para instanciar um objeto do tipo GerenciaVendas e retornar o método editarVenda.
@@ -42,12 +52,18 @@ public class Funcionario extends Usuario implements VendaCopyable, ListagemCopya
 	 * @param codigoVenda Id da venda que deseja editar
 	 * @param info Entradas do Usuario
 	 * @return Boolean editarVenda
+	 * @throws ErroGrave 
+	 * @throws QuantidadeProdutosInsuficiente 
+	 * @throws PratoNaoCadastrado 
+	 * @throws FormatoHorarioInvalido 
+	 * @throws FormatoDataInvalido 
+	 * @throws VendaNaoCadastrada 
 	 */
 	@Override
 	public boolean editarVenda(ArrayList<Venda> listaVendas, ArrayList<Prato> cardapio, String codigoVenda,
-			String[] info) {
+			String[] info, HashMap<String, ArrayList<Produto>> listaProdutos) throws FormatoDataInvalido, FormatoHorarioInvalido, PratoNaoCadastrado, QuantidadeProdutosInsuficiente, ErroGrave, VendaNaoCadastrada {
 		GerenciaVendas gerenciamentoVendas = new GerenciaVendas();
-		return gerenciamentoVendas.editarVenda(listaVendas, cardapio, codigoVenda, info);
+		return gerenciamentoVendas.editarVenda(listaVendas, cardapio, codigoVenda, info, listaProdutos);
 	}
 	
 	/**Metódo para instanciar um objeto do tipo GerenciaVendas e retornar o método excluirVenda.
@@ -55,9 +71,11 @@ public class Funcionario extends Usuario implements VendaCopyable, ListagemCopya
 	 * @param listaIds Lista de ids
 	 * @param codigoVenda Id da venda que deseja editar
 	 * @return Boolean excluirVenda
+	 * @throws ErroGrave 
+	 * @throws VendaNaoCadastrada 
 	 */
 	@Override
-	public boolean excluirVenda(ArrayList<Venda> listaVendas, ArrayList<String> listaIds, String codigoVenda) {
+	public boolean excluirVenda(ArrayList<Venda> listaVendas, ArrayList<String> listaIds, String codigoVenda) throws VendaNaoCadastrada, ErroGrave {
 		GerenciaVendas gerenciamentoVendas = new GerenciaVendas();
 		return gerenciamentoVendas.excluirVenda(listaVendas, listaIds, codigoVenda);
 	}
@@ -85,7 +103,7 @@ public class Funcionario extends Usuario implements VendaCopyable, ListagemCopya
 	 * @return Lista de produtos
 	 */
 	@Override
-	public void listarProduto(ArrayList<Produto> listaProdutos) {
+	public void listarProduto(HashMap<String, ArrayList<Produto>> listaProdutos) {
 		ListagemView listagemView = new ListagemView();
 		listagemView.listarProduto(listaProdutos);	
 	}

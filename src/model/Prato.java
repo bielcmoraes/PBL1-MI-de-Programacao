@@ -1,10 +1,12 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**Classe para objetos do tipo Prato, onde são contidos, valores e metódos necessarios para implementação da classe.
  * 
- * @author Gabriel Moraes e Luis Fernando Cintra
+ * @author Gabriel Moraes
+ * @author Luis Fernando Cintra
  * @see Entidade
  */
 public class Prato extends Entidade{
@@ -14,7 +16,8 @@ public class Prato extends Entidade{
 	private Double preco;
 	private String descricao;
 	private String categoria;
-	private ArrayList<Produto> produtos;
+	private HashMap<String, ArrayList<Produto>> produtos;
+	private HashMap<String, Double> receita;
 	
 	/**O construtor inicializa o costrutor da classe herdada e atribui a cada variável da classe os respectivos valores fornecidos como parâmetro. 
 	 * 
@@ -24,8 +27,9 @@ public class Prato extends Entidade{
 	 * @param descricao Descrição do prato
 	 * @param categoria Categoria do prato
 	 * @param produtos Produtos que compõem o prato
+	 * @param receita Ingredientes e quantidade utilizado no produto
 	 */
-	public Prato(ArrayList<String> listaIds, String nome, Double preco, String descricao, String categoria, ArrayList<Produto> produtos) {
+	public Prato(ArrayList<String> listaIds, String nome, Double preco, String descricao, String categoria, HashMap<String, ArrayList<Produto>> produtos, HashMap<String, Double> receita) {
 		
 		super(listaIds);
 		this.nome = nome;
@@ -33,6 +37,7 @@ public class Prato extends Entidade{
 		this.descricao = descricao;
 		this.categoria = categoria;
 		this.produtos = produtos;
+		this.receita = receita;
 	}
 	
 	/**Metódo para retorno de nome do prato.
@@ -82,17 +87,30 @@ public class Prato extends Entidade{
 	public void setCategoria(String categoria) {
 		this.categoria = categoria;
 	}
-	
-	/**Metódo para retorno de lista de produtos que compõem o prato.
-	 * @return Lista de produtos*/
-	public ArrayList<Produto> getProdutos() {
+
+	/**Metódo para retorno de lista de produtos utilizados no prato.
+	 * @return produtos Lista de produtos*/
+	public HashMap<String, ArrayList<Produto>> getProdutos() {
 		return produtos;
 	}
-	
-	/**Metódo para alterar a lista de produtos que compõem o prato.
-	 * @param produtos Nova lista de produtos que compõem o prato*/
-	public void setProdutos(ArrayList<Produto> produtos) {
+
+	/**Metódo para alterar a lista de produtos utilizados no prato.
+	 * @param produtos Novos produtos do prato*/
+	public void setProdutos(HashMap<String, ArrayList<Produto>> produtos) {
 		this.produtos = produtos;
 	}
+
+	/**Metódo para retorno de lista da receita do prato.
+	 * @return receita Receita do prato*/
+	public HashMap<String, Double> getReceita() {
+		return receita;
+	}
+
+	/**Metódo para alterar a receita do prato.
+	 * @param receita Nova receita do prato*/
+	public void setReceita(HashMap<String, Double> receita) {
+		this.receita = receita;
+	}
+
 	
 }

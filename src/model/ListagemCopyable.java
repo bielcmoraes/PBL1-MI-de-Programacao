@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**Estrutura que contém as assinaturas dos metódos relacionados a listagem e utilizada para "resolver" o problema de herança multipla em Java.
  * 
@@ -25,7 +26,7 @@ public interface ListagemCopyable {
 	 * 
 	 * @param listaProdutos Lista de produtos
 	 */
-	public void listarProduto(ArrayList<Produto> listaProdutos);
+	public void listarProduto(HashMap<String, ArrayList<Produto>> listaProdutos);
 	
 	/**Assinatura do metódo listarUsuario
 	 * 
